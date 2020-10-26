@@ -114,7 +114,9 @@ h3 {
   }
 
   .img-container {
-    left: 29px;
+    height: 200px;
+    width: 150px;
+    left: -50px;
   }
 
   h2 {
