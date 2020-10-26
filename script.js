@@ -1,10 +1,14 @@
 const image = document.querySelector('img');
 const title = document.getElementById('title');
 const artist = document.getElementById('artist');
+const progressContainer = document.getElementById('progress-container');
+const progress = document.getElementById('progress');
 const player = document.querySelector('audio');
 const playBtn = document.getElementById('play');
 const prevBtn = document.getElementById('prev');
 const nextBtn = document.getElementById('next');
+const currentTimeText = document.getElementById('current-time');
+const durationText = document.getElementById('duration');
 
 let isPlaying = false;
 let songs = [
@@ -81,8 +85,43 @@ function next() {
     play();
 }
 
+function updateProgress(e) {
+    if(isPlaying) {
+        let { currentTime, duration } = e.srcElement;
+        const currentTimeMinutes = Math.floor(currentTime/60);
+        let currentTimeSeconds = Math.floor(currentTime % 60);
+        if(currentTimeSeconds < 10) {
+            currentTimeSeconds = `0${currentTimeSeconds}`;
+        }
+        if(currentTimeSeconds) {
+            currentTimeText.textContent = `${currentTimeMinutes}:${currentTimeSeconds}` ;
+        }
+        const durationMinutes = Math.floor(duration/60);
+        let durationSeconds = Math.floor(duration % 60);
+        if(durationSeconds < 10) {
+            durationSeconds = `0${durationSeconds}`;
+        }
+        if(durationSeconds) {
+            durationText.textContent = `${durationMinutes}:${durationSeconds}`;
+        }
+        const progressPercent = (currentTime / duration) * 100 ;
+        progress.style.width = `${progressPercent}%`;
+    }
+}
+
+function setProgressBar(e) {
+    const width = this.clientWidth;
+    const x = e.offsetX;
+    let { duration } = player;
+
+    player.currentTime = (x/width) * duration;
+}
+
 prevBtn.addEventListener('click', prev);
 nextBtn.addEventListener('click', next);
+player.addEventListener('timeupdate', updateProgress);
+player.addEventListener('ended', next);
+progressContainer.addEventListener('click', setProgressBar);
 
 // On load
 loadSong(songs[index]);
